@@ -38,17 +38,17 @@ int main()
 }
 
 ///EJERCICIO 1
-int cargaArregloUsuario(int a[], int dim, int *val){
+int cargaArregloUsuario(int a[], int dim, int val){
     char opcion=0;
     int nota;
-    while(opcion!=27 && (*val)<=dim){
+    while(opcion!=27 && val<=dim){
 
         printf("Ingrese una nota para agregar al arreglo:  ");
         scanf("%d", &nota);
 
         if(nota>0 && nota<11){
-            a[*val]=nota;
-            (*val)++;
+            a[val]=nota;
+            val++;
         }else{
             printf("El dato ingresado no es valido.");
         }
@@ -56,7 +56,7 @@ int cargaArregloUsuario(int a[], int dim, int *val){
         printf("\nESC para salir /// Cualquier tecla para continuar...\n");
         opcion=getch();
     }
-    return (*val);
+    return val;
 }
 
 ///EJERCICIO 2
@@ -74,8 +74,10 @@ int sumaDatosArreglo(int a[], int val){
 
 ///EJERCICIO 3
 float promedio(int a[], int val){
-    float promedio;
-    promedio=(float) sumaDatosArreglo(a,val)/val;
+    float promedio=0;
+    if(val>0){
+        promedio=(float) sumaDatosArreglo(a,val)/val;
+        }
 
     return promedio;
 }
