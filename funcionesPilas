@@ -1,0 +1,253 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <conio.h>
+#include <time.h>
+#include "pila.h"
+
+int cargaPilaUsuario(Pila *p, int val);
+void pasaPila(Pila *a, Pila *b);
+int eliminaElMenor(Pila *p, int val);
+void ordenarPorSeleccion(Pila *p, int val);
+void insercion(Pila *p, int val, int dato);
+void insertarEnPilaOrdenada(Pila* p, int dato);
+void ordenaPilaPorInsercion(Pila* desordenada, Pila* ordenada);
+int cargaPilaRandom1(Pila* p, int cant);
+int sumaPrimeroYSegundo(Pila p,int val);
+int suma(Pila p, int val);
+float promedio(Pila p, int val);
+int calcularValidos(Pila p);
+void mostrarPila(Pila p, int val);
+int cargaPilaRandomRango(Pila*p, int val, int cant, int min, int max);
+int buscaDato(Pila p, int val, int dato);
+
+int main()
+{
+    srand(time(NULL));
+    int dato;
+    Pila pila1;
+    inicpila(&pila1);
+    int valPila1=0;
+
+    Pila pila2;
+    inicpila(&pila2);
+    int valPila2=0;
+
+//    valPila1=cargaPilaUsuario(&pila1, valPila1);
+    valPila1=cargaPilaRandomRango(&pila1, valPila1,5,0,40);
+    printf("VALIDOS:\t%d\n", valPila1);
+//    printf("PILA 1:\n");
+//    mostrar(&pila1);
+
+    valPila2=cargaPilaRandom1(&pila2,4);
+//    mostrar(&pila2);
+    ordenarPorSeleccion(&pila1, valPila1);
+    getch();
+    mostrar(&pila1);
+    mostrar(&pila2);
+
+    getch();
+    ordenaPilaPorInsercion(&pila2,&pila1);
+    printf("PILA ORDENADA:\n");
+    mostrar(&pila1);
+
+    printf("SUMA DE EL PRIMERO Y EL ANTERIOR: %d\n", sumaPrimeroYSegundo(pila1,valPila1));
+    valPila1=calcularValidos(pila1);
+    printf("VALIDOS NUEVOS: %d\n", valPila1);
+    printf("PILA ORDENADA:\n");
+    mostrar(&pila1);
+    printf("LA SUMA DE SUS COMPONENTES ES DE %d Y EL PROMEDIO ES DE %.2f\n", suma(pila1,valPila1), promedio(pila1,valPila1));
+    mostrarPila(pila1, valPila1);
+
+    printf("INGRESE UN DATO A BUSCAR EN LA PILA... ");
+    scanf("%d", &dato);
+    printf("1 SI EL DATO SE ENCUENTRA EN LA PILA / 0 SI NO SE ENCUENTRA EN LA PILA...\n");
+    printf("RESULTADO: %d", buscaDato(pila1,valPila1,dato));
+
+    return 0;
+}
+
+int cargaPilaUsuario(Pila *p, int val){
+    char opcion=0;
+    int dato;
+    while(opcion!=27 && val<50){
+        printf("Ingrese un dato para agregar a la pila:\t");
+        scanf("%d", &dato);
+
+        apilar(p, dato);
+        val++;
+
+        printf("\nESC PARA SALIR / CUALQUIER TECLA PARA CONTINUAR\n");
+        opcion=getch();
+
+    }
+
+    return val;
+}
+int cargaPilaRandom1(Pila* p, int cant){
+    int contador=0;
+    while(contador < cant){
+        apilar(p, rand()%10);
+        contador++;
+    }
+    return contador;
+}
+
+void pasaPila(Pila *a, Pila *b){
+    Pila aux;
+    inicpila(&aux);
+    Pila aux2;
+    inicpila(&aux2);
+
+    while(!pilavacia(a)){
+        apilar(&aux, desapilar(a));
+    }
+    while(!pilavacia(b)){
+        apilar(&aux2,desapilar(b));
+    }
+    while(!pilavacia(&aux2)){
+        apilar(a,desapilar(&aux2));
+    }
+    while(!pilavacia(&aux)){
+        apilar(b, desapilar(&aux));
+    }
+}
+
+int eliminaElMenor(Pila *p, int val){
+    Pila menor;
+    Pila aux;
+    inicpila(&menor);
+    inicpila(&aux);
+
+    if(val>0){
+        apilar(&menor, desapilar(p));
+    }
+    while(!pilavacia(p)){
+        if(tope(p)<(tope(&menor))){
+            apilar(&aux,desapilar(&menor));
+            apilar(&menor, desapilar(p));
+        }else{
+            apilar(&aux,desapilar(p));
+        }
+    }
+    while(!pilavacia(&aux)){
+        apilar(p,desapilar(&aux));
+    }
+
+    return tope(&menor);
+}
+
+void ordenarPorSeleccion(Pila *p, int val){
+    Pila aux;
+    inicpila(&aux);
+    Pila aux2;
+    inicpila(&aux2);
+    int menor=0;
+
+    for(int i=0; i<val; i++){
+        menor= eliminaElMenor(p,val);
+        apilar(&aux, menor);
+    }
+    while(!pilavacia(&aux)){
+        apilar(&aux2, desapilar(&aux));
+    }
+    while(!pilavacia(&aux2)){
+        apilar(p, desapilar(&aux2));
+    }
+
+}
+
+void insertarEnPilaOrdenada(Pila* p, int dato){
+    Pila aux;
+    inicpila(&aux);
+
+    while(!pilavacia(p) && dato<tope(p)){
+        apilar(&aux, desapilar(p));
+    }
+    apilar(p, dato);
+    while(!pilavacia(&aux)){
+        apilar(p,desapilar(&aux));
+    }
+}
+
+void ordenaPilaPorInsercion(Pila* desordenada, Pila* ordenada){
+    Pila aux;
+    inicpila(&aux);
+    while(!pilavacia(desordenada)){
+        insertarEnPilaOrdenada(ordenada, tope(desordenada));
+        apilar(&aux,desapilar(desordenada));
+    }
+}
+
+int sumaPrimeroYSegundo(Pila p,int val){
+    int suma=0;
+    Pila aux;
+    inicpila(&aux);
+
+    if(!pilavacia(&p) && val>1){
+        apilar(&aux,desapilar(&p));
+        suma=tope(&aux)+tope(&p);
+    }
+    return suma;
+}
+int suma(Pila p, int val){
+    int suma=0;
+    Pila aux;
+    inicpila(&aux);
+
+    while(!pilavacia(&p)){
+        suma=suma+tope(&p);
+        apilar(&aux, desapilar(&p));
+    }
+
+    return suma;
+}
+float promedio(Pila p, int val){
+    float promedio;
+    promedio= (float) suma(p, val)/val;
+    return promedio;
+}
+
+int calcularValidos(Pila p){
+    int validos=0;
+    Pila aux;
+    inicpila(&aux);
+    while(!pilavacia(&p)){
+        apilar(&aux, desapilar(&p));
+        validos++;
+    }
+    return validos;
+}
+
+void mostrarPila(Pila p, int val){
+    Pila aux;
+    inicpila(&aux);
+    while(!pilavacia(&p)){
+    for(int i=0; i<val; i++){
+        printf("| %d |\n", tope(&p));
+        apilar(&aux, desapilar(&p));
+    }
+    }
+}
+
+int cargaPilaRandomRango(Pila*p, int val, int cant, int min, int max){
+    for(int i=0; i<cant; i++){
+        apilar(p,rand()%max+min);
+        val++;
+    }
+    return val;
+}
+
+int buscaDato(Pila p, int val, int dato){
+    int flag=0;
+    Pila aux;
+    inicpila(&aux);
+    while(!pilavacia(&p) && flag!=1){
+        if(tope(&p)==dato){
+            flag= 1;
+        }else{
+            apilar(&aux,desapilar(&p));
+        }
+    }
+
+    return flag;
+}
