@@ -1,0 +1,122 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <conio.h>
+#include <time.h>
+#include "pila.h"
+
+int cargaArregloUsuario(int a[], int dim, int *val);
+void muestraArreglo(int a[], int val);
+int sumaDatosArreglo(int a[], int val);
+float promedio(int a[], int val);
+void pasaArregloAPila(int a[], int val, Pila *aprobados, Pila *desprobados);
+void muestraPila(Pila p);
+
+//TOMAS MAC GUIRE ,DNI: 43784440 , COMISION 13//
+
+///EJERCICIO 7
+int main()
+{
+    int notas[30];
+    int valNotas=0;
+    Pila aprobados;
+    inicpila(&aprobados);
+    Pila desaprobados;
+    inicpila(&desaprobados);
+
+    valNotas= cargaArregloUsuario(notas, 30, &valNotas);
+    muestraArreglo(notas, valNotas);
+    printf("\nLa suma de los datos del arreglo es de:  %d\n", sumaDatosArreglo(notas, valNotas));
+    printf("El promedio del arreglo es de: %.2f", promedio(notas, valNotas));
+
+    pasaArregloAPila(notas,valNotas,&aprobados,&desaprobados);
+    printf("\nPILA DE APROBADOS: \n");
+    mostrar(&aprobados);
+    printf("\nPILA DE DESAPROBADOS: \n");
+    muestraPila(desaprobados);
+
+    return 0;
+}
+
+///EJERCICIO 1
+int cargaArregloUsuario(int a[], int dim, int *val){
+    char opcion=0;
+    int nota;
+    while(opcion!=27 && (*val)<=dim){
+
+        printf("Ingrese una nota para agregar al arreglo:  ");
+        scanf("%d", &nota);
+
+        if(nota>0 && nota<11){
+            a[*val]=nota;
+            (*val)++;
+        }else{
+            printf("El dato ingresado no es valido.");
+        }
+
+        printf("\nESC para salir /// Cualquier tecla para continuar...\n");
+        opcion=getch();
+    }
+    return (*val);
+}
+
+///EJERCICIO 2
+int sumaDatosArreglo(int a[], int val){
+    int suma=0;
+    if(val>=0){
+        for(int i=0; i<val; i++){
+        suma=suma+a[i];
+        }
+    }else{
+        printf("El arreglo se encuentra vacio.");
+    }
+    return suma;
+}
+
+///EJERCICIO 3
+float promedio(int a[], int val){
+    float promedio;
+    promedio=(float) sumaDatosArreglo(a,val)/val;
+
+    return promedio;
+}
+
+///EJERCICIO 4
+void muestraArreglo(int a[], int val){
+    for(int i=0; i<val;i++){
+
+        if(i%10==0){
+            printf("\n");
+        }
+        printf(" %d  |", a[i]);
+    }
+
+}
+
+///EJERCICIO 5
+void pasaArregloAPila(int a[], int val, Pila *aprobados, Pila *desprobados){
+    int i=0;
+    while(i<val){
+        if(a[i]>=5){
+            apilar(aprobados, a[i]);
+        }else{
+            apilar(desprobados, a[i]);
+        }
+        i++;
+    }
+}
+///EJERCICIO 6
+void muestraPila(Pila p){
+    Pila aux;
+    inicpila(&aux);
+    int salto=0;
+
+    while(!pilavacia(&p)){
+        if(salto%15==0){
+            printf("\n");
+        }
+        printf(" %d |", tope(&p));
+        apilar(&aux, desapilar(&p));
+        salto++;
+    }
+}
+
