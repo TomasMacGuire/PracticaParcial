@@ -1,0 +1,184 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+#include <conio.h>
+#include "pila.h"
+
+int cargaArregloUsuario(int a[], int dim ,  int *val);
+void muestraArreglo(int a[], int val);
+int sumaArreglo(int a[], int val);
+void pasaArregloPila(int a[], int val, Pila *p);
+int cargaArregloRandom(int a[], int dim, int *val, int cant, int min, int max);
+int buscaDato(int a[], int val, int dato);
+int buscaMenor(int a[], int val);
+void ordenaInsercion(int a[], int val);
+void insertar(int a[], int i, int dato);
+int capicua(int a[], int val);
+
+int main()
+{
+    srand(time(NULL));
+    int arreglo1[30];
+    int validos;
+    int suma;
+    int dato;
+    Pila pilita;
+    inicpila(&pilita);
+
+    validos= cargaArregloUsuario(arreglo1,5,&validos);
+    muestraArreglo(arreglo1, validos);
+    printf("\n VALIDOS: %d", validos);
+
+    suma=sumaArreglo(arreglo1, validos);
+    printf("\nLa suma de los datos del arreglo es de: %d", suma);
+
+    pasaArregloPila(arreglo1, validos, &pilita);
+    mostrar(&pilita);
+
+    printf("Indique un dato para buscar en el arreglo:");
+    scanf("%d", &dato);
+
+    printf("La posicion del arreglo en la que se encuentra el dato es: %d . (Si retorna -1 el dato no se encuentra)\n", buscaDato(arreglo1,validos,dato));
+
+    printf("ARREGLO ORDENADO");
+    ordenaInsercion(arreglo1,validos);
+    muestraArreglo(arreglo1,validos);
+
+    printf("\nEl arreglo es capicua? : %d // SI RETORNA 1 ES VERDADERO , SI RETORNA 0 ES FALSO", capicua(arreglo1,validos));
+
+    return 0;
+}
+
+int cargaArregloUsuario(int a[], int dim, int *val){
+    char opcion;
+    while(opcion!=27 && (*val)<dim){
+        printf("Ingrese un digito para cargar al arreglo:\n");
+        scanf("%d", &a[*val]);
+        (*val)++;
+        if((*val)==dim){
+            printf("EL ARREGLO SE ENCUENTRA COMPLETO.\n");
+        }else{
+            printf("ESC PARA SALIR // CUALQUIER TECLA PARA CONTINUAR AGREGANDO...\n");
+            opcion=getch();
+        }
+    }
+
+    return (*val);
+}
+
+void muestraArreglo(int a[], int val){
+    for(int i=0; i<val; i++){
+        if(i%10==0){
+            printf("\n");
+        }
+        printf("  %d  |", a[i]);
+    }
+}
+
+int sumaArreglo(int a[], int val){
+    int suma=0;
+    if(val>0){
+      for(int i=0; i<val;i++){
+        suma=suma+a[i];
+      }
+    }else{
+        printf("\nEL ARREGLO NO TIENE DATOS.\n");
+    }
+
+    return suma;
+}
+
+void pasaArregloPila(int a[], int val, Pila *p){
+
+    for( int i=0; i<val; i++){
+        apilar(p, a[i]);
+    }
+
+}
+
+int cargaArregloRandom(int a[], int dim, int *val, int cant, int min, int max){
+
+    while(cant<=dim && (*val)<cant){
+
+        a[*val]=rand()%(max+1-min)+min;
+        (*val)++;
+    }
+
+    return (*val);
+}
+
+int buscaDato(int a[], int val, int dato){
+    int flag=-1;
+    int i =0;
+    while(i<val && flag!=i){
+        i++;
+        if(a[i]==dato){
+            flag=i;
+        }
+
+    }
+    return flag;
+}
+
+int buscaMenor(int a[], int val){
+    int i=1;
+    int menor=0;
+
+    while(i<val){
+        if(a[i]<a[menor]){
+            menor=i;
+        }
+        i++;
+    }
+
+//    printf("El menor dato es: %d y se encuentra en la posicion %d", a[menor],menor);
+    return menor;
+}
+
+//void ordenacionPorSeleccion(int a[], int val){
+//    int menor;
+//    for(int i=0; i<val;i++){
+//        menor=buscaMenor(a,val);
+//        intercambio(&a[i], a[menor]);
+//    }
+//
+//}
+
+void intercambio(int *a, int *b){
+    int aux= *a;
+    *a=*b;
+    *b=aux;
+}
+
+void insertar(int a[], int i, int dato){
+
+    while(i>=0 && dato<a[i]){
+        a[i+1]=a[i];
+        i--;
+    }
+    a[i+1]=dato;
+}
+
+void ordenaInsercion(int a[], int val){
+
+    for(int i=0; i<val;i++){
+        insertar(a,i,a[i+1]);
+    }
+
+}
+
+int capicua(int a[], int val){
+    int flag=1;
+    int inicio=0;
+    int fin=val-1;
+
+    while(inicio<fin && flag==1){
+        if(a[inicio]==a[fin]){
+            inicio++;
+            fin--;
+        }else{
+            flag=0;
+        }
+    }
+    return flag;
+}
